@@ -1,4 +1,6 @@
-package org.example;
+package org.example.server;
+
+import org.example.connection.MongoDBConnection;
 
 import static spark.Spark.*;
 /*
@@ -25,23 +27,13 @@ mvn exec:java
 
  */
 public class Logservice {
-    public static void main(String[] args) {
+    public static void main(String... args){
         port(getPort());
-        get("/logservice", (req, res) -> {
-            String val = req.queryParams("value");
-            return logMessage(val);
+        get("/logs", (req,res) -> {
+            String log = req.queryParams("log");
+            MongoDBConnection.insertLog(log);
+            return MongoDBConnection.getLast10Logs();
         });
-    }
-
-    private static String logMessage(String val){
-        //implement connection to mongo
-        return """
-               {
-               "m1":"mensaj1",
-               "m2":"mensaj2",
-               "m3":"mensaj3"
-               }
-               """;
     }
 
     private static int getPort(){
